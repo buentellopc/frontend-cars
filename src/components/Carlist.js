@@ -6,6 +6,9 @@ import {
   gridClasses,
 } from "@mui/x-data-grid";
 import Snackbar from "@mui/material/Snackbar";
+import Stack from "@mui/material/Stack";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import { SERVER_URL } from "../constant";
 import AddCar from "./AddCar";
@@ -13,6 +16,7 @@ import EditCar from "./EditCar";
 
 function Carlist() {
   const [open, setOpen] = useState(false);
+  const [cars, setCars] = useState([]);
 
   useEffect(() => {
     fetchCars();
@@ -37,8 +41,6 @@ function Carlist() {
         .catch((err) => console.error(err));
   };
 
-  const [cars, setCars] = useState([]);
-
   const columns = [
     { field: "brand", headerName: "Brand", width: 200 },
 
@@ -50,6 +52,13 @@ function Carlist() {
 
     { field: "price", headerName: "Price", width: 150 },
     {
+      field: "_links.car.href",
+      headerName: "",
+      sortable: false,
+      filterable: false,
+      renderCell: (row) => <EditCar data={row} updateCar={updateCar} />,
+    },
+    {
       field: "_links.self.href",
 
       headerName: "",
@@ -59,15 +68,10 @@ function Carlist() {
       filterable: false,
 
       renderCell: (row) => (
-        <button onClick={() => onDelClick(row.id)}>Delete</button>
+        <IconButton onClick={() => onDelClick(row.id)}>
+          <DeleteIcon color="error" />
+        </IconButton>
       ),
-    },
-    {
-      field: "_links.car.href",
-      headerName: "",
-      sortable: false,
-      filterable: false,
-      renderCell: (row) => <EditCar data={row} updateCar={updateCar} />,
     },
   ];
 
@@ -116,7 +120,10 @@ function Carlist() {
 
   return (
     <>
-      <AddCar addCar={addCar} />
+      <Stack mt={2} mb={2}>
+        <AddCar addCar={addCar} />
+      </Stack>
+
       <div style={{ height: 500, width: "100%" }}>
         <DataGrid
           rows={cars}
